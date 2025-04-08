@@ -58,14 +58,13 @@ while true; do
         # get username id
         USERNAME_ID=$($PSQL "SELECT username_id FROM players WHERE username='$USERNAME' OR username='$EXISTING_USERNAME'")
         # insert new game result
-        INSERT_GAME_RESULT=$($PSQL "INSERT INTO game_history(username_id, number_of_guesses) VALUES($USERNAME_ID, $ATTEMPTS)")
+        INSERT_GAME_RESULT=$($PSQL "INSERT INTO game_history(username_id, attempts) VALUES($USERNAME_ID, $ATTEMPTS)")
         # get count of games played
         GAMES_PLAYED=$($PSQL "SELECT COUNT(*) FROM game_history WHERE username_id=$USERNAME_ID")
         # insert games played
         INSERT_GAMES_PLAYED_RESULT=$($PSQL "UPDATE players SET games_played=$GAMES_PLAYED WHERE username_id=$USERNAME_ID")
         # get best game
-        BEST_GAME=$($PSQL "SELECT MIN(number_of_guesses) FROM game_history WHERE username_id=$USERNAME_ID")
-        # insert best game
+        BEST_GAME=$($PSQL "SELECT MIN(attempts) FROM game_history WHERE username_id=$USERNAME_ID") # insert best game
         INSERT_BEST_GAME_RESULT=$($PSQL "UPDATE players SET best_game=$BEST_GAME WHERE username_id=$USERNAME_ID")
         # Format singular or plural
         TRY_TRIES=$(if [[ $ATTEMPTS -eq 1 ]]; then echo "try"; else echo "tries"; fi)
