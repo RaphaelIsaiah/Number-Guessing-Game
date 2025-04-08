@@ -29,15 +29,15 @@ update_game_results() {
     USERNAME_ID=$($PSQL "SELECT username_id FROM $PLAYERS_TABLE WHERE username='$1'")
 
     # Insert new game result
-    $PSQL "INSERT INTO $GAME_HISTORY_TABLE(username_id, attempts) VALUES($USERNAME_ID, $2)"
+    $PSQL "INSERT INTO $GAME_HISTORY_TABLE(username_id, attempts) VALUES($USERNAME_ID, $2)" >/dev/null
 
     # Update games played
     GAMES_PLAYED=$($PSQL "SELECT COUNT(*) FROM $GAME_HISTORY_TABLE WHERE username_id=$USERNAME_ID")
-    $PSQL "UPDATE $PLAYERS_TABLE SET games_played=$GAMES_PLAYED WHERE username_id=$USERNAME_ID"
+    $PSQL "UPDATE $PLAYERS_TABLE SET games_played=$GAMES_PLAYED WHERE username_id=$USERNAME_ID" >/dev/null
 
     # Update best game
     BEST_GAME=$($PSQL "SELECT MIN(attempts) FROM $GAME_HISTORY_TABLE WHERE username_id=$USERNAME_ID")
-    $PSQL "UPDATE $PLAYERS_TABLE SET best_game=$BEST_GAME WHERE username_id=$USERNAME_ID"
+    $PSQL "UPDATE $PLAYERS_TABLE SET best_game=$BEST_GAME WHERE username_id=$USERNAME_ID" >/dev/null
 }
 
 # Welcome message and initialization
@@ -49,12 +49,12 @@ read USERNAME
 EXISTING_USERNAME=$(check_username "$USERNAME")
 
 if [[ -z $EXISTING_USERNAME ]]; then
-    insert_new_user "$USERNAME"
+    insert_new_user "$USERNAME" >/dev/null
     echo "Welcome, $USERNAME! It looks like this is your first time here."
 else
     STATS=$(get_player_stats "$EXISTING_USERNAME")
-    GAMES_PLAYED=$(echo $STATS | awk '{print $1}')
-    BEST_GAME=$(echo $STATS | awk '{print $2}')
+    GAMES_PLAYED=$(echo $STATS | awk -F'|' '{print $1}')
+    BEST_GAME=$(echo $STATS | awk -F'|' '{print $2}')
 
     # Handle pluralizations
     GAME_GAMES=$(if [[ $GAMES_PLAYED -eq 1 ]]; then echo "game"; else echo "games"; fi)
