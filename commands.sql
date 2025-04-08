@@ -13,3 +13,5 @@ ALTER TABLE games ADD COLUMN user_id INT NOT NULL;
 ALTER TABLE games ADD CONSTRAINT fk_users_games FOREIGN KEY (user_id) REFERENCES users(user_id);
 ALTER TABLE games ADD COLUMN guesses INT NOT NULL DEFAULT(0);
 
+psql -d number_guess -f number_guess.sql
+psql -U postgres -d number_guess -f number_guess.sql
