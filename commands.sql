@@ -16,3 +16,6 @@ ALTER TABLE games ADD COLUMN guesses INT NOT NULL DEFAULT(0);
 -- psql -d number_guess -f number_guess.sql
 -- psql -U postgres -d number_guess -f number_guess.sql
 TRUNCATE TABLE players, game_history RESTART IDENTITY CASCADE;
+
+pg_dump -U postgres -d number_guess -F p -f number_guess.sql
+pg_dump -cC --inserts -U postgres number_guess > number_guess.sql

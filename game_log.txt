@@ -4,3 +4,4 @@ UPDATE 1
 Player: Tom, Attempts: 4, Secret Number: 408
 Player: Amy, Attempts: 2, Secret Number: 528
 Player: Amy, Attempts: 12, Secret Number: 597
+Player: Tom, Attempts: 3, Secret Number: 450

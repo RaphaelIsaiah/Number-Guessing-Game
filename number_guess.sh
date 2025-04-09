@@ -42,7 +42,18 @@ update_game_results() {
 
 # Helper function for pluralization
 pluralize() {
-    [[ $1 -eq 1 ]] && echo "$2" || echo "${2}s"
+    local count=$1
+    local singular=$2
+
+    if [[ $count -eq 1 ]]; then
+        echo "$singular"
+    else
+        case "$singular" in
+        guess) echo "guesses" ;;
+        try) echo "tries" ;;
+        *) echo "${singular}s" ;; # Default case for regular plurals
+        esac
+    fi
 }
 
 # Welcome message and initialization
@@ -78,7 +89,7 @@ fi
 
 # Generate the random number
 SECRET_NUMBER=$((RANDOM % 1000 + 1))
-echo $SECRET_NUMBER
+# echo $SECRET_NUMBER
 
 # Initialize attempts counter
 ATTEMPTS=0
