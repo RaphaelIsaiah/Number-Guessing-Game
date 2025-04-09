@@ -40,11 +40,25 @@ update_game_results() {
     $PSQL "UPDATE $PLAYERS_TABLE SET best_game=$BEST_GAME WHERE username_id=$USERNAME_ID" >/dev/null
 }
 
+# Helper function for pluralization
+pluralize() {
+    [[ $1 -eq 1 ]] && echo "$2" || echo "${2}s"
+}
+
 # Welcome message and initialization
 trap "echo 'Thanks for playing! Exiting now.'; exit" SIGINT
 
-echo "Enter your username:"
-read USERNAME
+# Input validation for username
+while true; do
+    echo "Enter your username (letters, numbers, or underscores only):"
+    read USERNAME
+
+    if [[ -z $USERNAME || $USERNAME =~ [^a-zA-Z0-9_] ]]; then
+        echo "Invalid username. Please use letters, numbers, or underscores only."
+    else
+        break
+    fi
+done
 
 EXISTING_USERNAME=$(check_username "$USERNAME")
 
@@ -56,9 +70,8 @@ else
     GAMES_PLAYED=$(echo $STATS | awk -F'|' '{print $1}')
     BEST_GAME=$(echo $STATS | awk -F'|' '{print $2}')
 
-    # Handle pluralizations
-    GAME_GAMES=$(if [[ $GAMES_PLAYED -eq 1 ]]; then echo "game"; else echo "games"; fi)
-    GUESS_GUESSES=$(if [[ $BEST_GAME -eq 1 ]]; then echo "guess"; else echo "guesses"; fi)
+    GAME_GAMES=$(pluralize "$GAMES_PLAYED" "game")
+    GUESS_GUESSES=$(pluralize "$BEST_GAME" "guess")
 
     echo "Welcome back, $EXISTING_USERNAME! You have played $GAMES_PLAYED $GAME_GAMES, and your best game took $BEST_GAME $GUESS_GUESSES."
 fi
@@ -90,11 +103,17 @@ while true; do
     else
         ((ATTEMPTS++))
 
-        TRY_TRIES=$(if [[ $ATTEMPTS -eq 1 ]]; then echo "try"; else echo "tries"; fi)
+        TRY_TRIES=$(pluralize "$ATTEMPTS" "try")
 
         echo "You guessed it in $ATTEMPTS $TRY_TRIES. The secret number was $SECRET_NUMBER. Nice job!"
 
         update_game_results "$USERNAME" "$ATTEMPTS"
+        GAME_GAMES=$(pluralize "$GAMES_PLAYED" "game")
+
+        echo "Your stats have been updated. You've now played $GAMES_PLAYED $GAME_GAMES!"
+
+        echo "Player: $USERNAME, Attempts: $ATTEMPTS, Secret Number: $SECRET_NUMBER" >>game_log.txt
+
         break
     fi
 
