@@ -64,7 +64,8 @@ while true; do
         # insert games played
         INSERT_GAMES_PLAYED_RESULT=$($PSQL "UPDATE players SET games_played=$GAMES_PLAYED WHERE username_id=$USERNAME_ID")
         # get best game
-        BEST_GAME=$($PSQL "SELECT MIN(attempts) FROM game_history WHERE username_id=$USERNAME_ID") # insert best game
+        BEST_GAME=$($PSQL "SELECT MIN(attempts) FROM game_history WHERE username_id=$USERNAME_ID")
+        # insert best game
         INSERT_BEST_GAME_RESULT=$($PSQL "UPDATE players SET best_game=$BEST_GAME WHERE username_id=$USERNAME_ID")
         # Format singular or plural
         TRY_TRIES=$(if [[ $ATTEMPTS -eq 1 ]]; then echo "try"; else echo "tries"; fi)
